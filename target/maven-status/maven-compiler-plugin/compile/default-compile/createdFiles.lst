@@ -1,0 +1,6 @@
+com\test\filemanager\service\FileManagerService.class
+com\test\filemanager\service\impl\FileManagerServiceImpl.class
+com\test\filemanager\domain\FileManagerItem.class
+com\test\filemanager\domain\Directory.class
+com\test\filemanager\domain\File.class
+com\test\filemanager\webapp\FileManagerController.class
