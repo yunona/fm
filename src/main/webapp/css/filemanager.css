@@ -1,0 +1,17 @@
+table td {
+    border: none;
+}
+
+.close .toggle {
+    background: url("/img/minus.gif");
+}
+
+.open .toggle {
+    background: url("/img/plus.gif");
+}
+
+.toggle {
+    height: 9px;
+    width: 9px;
+    display: inline-block;
+}-block;

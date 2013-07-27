@@ -1,5 +1,9 @@
 package com.testtask.filemanager.service;
 
+import com.testtask.filemanager.domain.FileManagerItem;
+
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Yunona
@@ -8,4 +12,8 @@ package com.testtask.filemanager.service;
  * To change this template use File | Settings | File Templates.
  */
 public interface FileManagerService {
+
+    public List<FileManagerItem> getSubFileManagerItems(String path);
+
+    public List<FileManagerItem> getRootFileManagerItems();
 }
