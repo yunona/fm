@@ -7,4 +7,4 @@ RUN:
 
 mvn jetty:run
 
-Then open the URL: http://localhost:8080
+Then open the http://localhost:8080/filemanager/index.html

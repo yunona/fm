@@ -1,16 +1,16 @@
 package com.testtask.filemanager.service.impl;
 
-import com.testtask.filemanager.domain.FileItemType;
 import com.testtask.filemanager.domain.FileManagerItem;
+import com.testtask.filemanager.domain.FileManagerState;
 import com.testtask.filemanager.service.FileManagerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,49 +22,46 @@ import java.util.regex.Pattern;
 @Service
 public class FileManagerServiceImpl implements FileManagerService {
 
+    @Autowired
+    //fileManagerState for curretn session
+    private FileManagerState fileManagerState;
+
+
     @Override
-    public List<FileManagerItem> getSubFileManagerItems(String path) {
-        File parent = new File(path);
-        if (!parent.exists()) return new ArrayList<FileManagerItem>();
-        List<FileManagerItem> subItems = getFileManagerItems(parent.listFiles());
-        return subItems;
+    public List<FileManagerItem> getSubFileManagerItems(String path) throws IOException {
+        fileManagerState.addOpenedItemPath(path);
+        File file = new File(path);
+        if (!file.exists()) return new ArrayList<FileManagerItem>();
+
+        FileManagerItesLoadStrategy loadStrategy = FileManagerItesLoadStrategy.getFileManagerItesLoadStrategy(FileUtils.getFileExtension(file));
+        return loadStrategy.getSubFileManagerItems(path);
     }
 
     @Override
-    public List<FileManagerItem> getRootFileManagerItems() {
-        List<FileManagerItem> rootItems = getFileManagerItems(File.listRoots());
+    public List<FileManagerItem> getInitialFileManagerItems(String root) throws IOException {
+        List<FileManagerItem> rootItems;
+        if (StringUtils.isEmpty(root) || root.equals(File.separator)) {
+            boolean isUsePathForName = true;
+            rootItems = BasicFileManagerItesLoadStrategy.getSubFileManagerItems(File.listRoots(), isUsePathForName);
+        } else {
+            rootItems = getSubFileManagerItems(root);
+        }
+        addOpenedItems(rootItems);
         return rootItems;
     }
 
-    private List<FileManagerItem> getFileManagerItems(File[] files) {
-        List<FileManagerItem> rootItems = new ArrayList<FileManagerItem>();
-        for (File file : files) {
-            FileManagerItem fileManagerItem = new FileManagerItem(FileItemType.DISC);
-            fileManagerItem.setPath(file.getAbsolutePath());
-            fileManagerItem.setName(FileSystemView.getFileSystemView().getSystemDisplayName(file));
-            fileManagerItem.setHasSubItems(hasFileSubItems(file));
-            fileManagerItem.setExtension(getFileExtension(file));
-            rootItems.add(fileManagerItem);
-        }
-        return rootItems;
+    @Override
+    public void closeFileManagerItems(String path) {
+        fileManagerState.close(path);
     }
 
-    private boolean hasFileSubItems(File file) {
-        String[] subElements = file.list();
-        if (subElements != null && subElements.length > 0) {
-            return true;
+    private void addOpenedItems(List<FileManagerItem> items) throws IOException {
+        for (FileManagerItem item : items) {
+            if (fileManagerState.isOpen(item.getPath())) {
+                List<FileManagerItem> subItems = getSubFileManagerItems(item.getPath());
+                item.setSubItems(subItems);
+                addOpenedItems(subItems);
+            }
         }
-        return false;
-    }
-
-    private String getFileExtension(File file) {
-        if (file == null || file.getName() == null) return "";
-        Pattern pattern = Pattern.compile("\\.([^.]*)$");
-        Matcher matcher = pattern.matcher(file.getName());
-        if (matcher.find()) {
-            String extension = matcher.group(1);
-            return extension;
-        }
-        return "";
     }
 }

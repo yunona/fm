@@ -1,5 +1,9 @@
 package com.testtask.filemanager.domain;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Yunona
@@ -7,18 +11,16 @@ package com.testtask.filemanager.domain;
  * Time: 7:38
  * To change this template use File | Settings | File Templates.
  */
-public class FileManagerItem {
+public class FileManagerItem implements Serializable {
 
-    //private final UUID id = UUID.randomUUID();
     private String name = "";
     private String extension = "";
     private String path = "";
-    //private FileManagerItem parentItem;
-    private FileItemType type = FileItemType.FILE;
-    private boolean hasSubItems;
+    private boolean isExpandable;
+    private List<FileManagerItem> subItems = new ArrayList<FileManagerItem>();
+    private boolean isDirectory;
 
-    public FileManagerItem(FileItemType type) {
-        this.type = type;
+    public FileManagerItem() {
     }
 
     public String getName() {
@@ -45,23 +47,36 @@ public class FileManagerItem {
         this.path = path;
     }
 
-    public FileItemType getType() {
-        return type;
+    public boolean isExpandable() {
+        return isExpandable;
     }
 
-    public void setType(FileItemType type) {
-        this.type = type;
+    public void setExpandable(boolean expandable) {
+        this.isExpandable = expandable;
     }
 
-    public boolean isHasSubItems() {
-        return hasSubItems;
+    public List<FileManagerItem> getSubItems() {
+        return subItems;
     }
 
-    public void setHasSubItems(boolean hasSubItems) {
-        this.hasSubItems = hasSubItems;
+    public void setSubItems(List<FileManagerItem> subitems) {
+        this.subItems = subitems;
     }
 
-    public String getFileIcon() {
-        return type.toString().toLowerCase();
+    public void addSubItem(FileManagerItem subitem) {
+        subItems.add(subitem);
+    }
+
+    public boolean isDirectory() {
+        return isDirectory;
+    }
+
+    public void setDirectory(boolean directory) {
+        isDirectory = directory;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

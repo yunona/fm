@@ -2,6 +2,7 @@ package com.testtask.filemanager.service;
 
 import com.testtask.filemanager.domain.FileManagerItem;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -13,7 +14,9 @@ import java.util.List;
  */
 public interface FileManagerService {
 
-    public List<FileManagerItem> getSubFileManagerItems(String path);
+    public List<FileManagerItem> getSubFileManagerItems(String path) throws IOException;
 
-    public List<FileManagerItem> getRootFileManagerItems();
+    public List<FileManagerItem> getInitialFileManagerItems(String root) throws IOException;
+
+    public void closeFileManagerItems(String path);
 }
