@@ -11,7 +11,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/filemanager.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#fileItems').fileManager({rootDirectory:''});
+            $('#fileItems').fileManager({rootDirectory:'', url:'${pageContext.request.contextPath}/filemanager'});
         });</script>
 
 </head>

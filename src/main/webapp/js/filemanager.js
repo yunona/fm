@@ -1,5 +1,5 @@
 (function ($) {
-    $.fn.fileManager = function (rootDirectory) {
+    $.fn.fileManager = function (settings) {
         var outerDiv = $(this);
 
         function addDirectory(item, parent) {
@@ -21,7 +21,7 @@
         }
 
         $(function() {
-            $.post("/filemanager/initialElements.ajax", {root : rootDirectory.rootDirectory })
+            $.post(settings.url + "/initialElements.ajax", {root : settings.rootDirectory })
                     .done(function(data) {
 
                 var f = function (parent, items) {
@@ -55,7 +55,7 @@
                 }
 
                 var parents = divElement.parents('div');
-                var path = rootDirectory.rootDirectory;
+                var path = settings.rootDirectory;
                 if (parents.length > 1) {
                     for (var i = parents.length - 2; i >= 0; i--) {
                         var p = parents[i];
@@ -68,7 +68,7 @@
 
                 if (spanElement.hasClass('open')) {
 
-                    $.post("/filemanager/subElements.ajax", {parent : path })
+                    $.post(settings.url + "/subElements.ajax", {parent : path })
                             .done(function(data) {
                         $.each(data, function(i, item) {
                             if (item.expandable) {
@@ -82,7 +82,7 @@
                     divElement.removeClass('open').addClass('close');
                     spanElement.removeClass('open').addClass('close');
                 } else {
-                    $.post("/filemanager/closeElements.ajax", {parent : path });
+                    $.post(settings.url + "/closeElements.ajax", {parent : path });
                     divElement.children('div').remove();
                     divElement.removeClass('close').addClass('open');
                     spanElement.removeClass('close').addClass('open');
