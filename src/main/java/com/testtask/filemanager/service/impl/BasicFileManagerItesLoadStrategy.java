@@ -5,6 +5,7 @@ import com.testtask.filemanager.domain.FileManagerItem;
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ public class BasicFileManagerItesLoadStrategy extends FileManagerItesLoadStrateg
     public List<FileManagerItem> getSubFileManagerItems(String path) {
         boolean isUsePathForName = false;
         File parent = new File(path);
+        if (!parent.exists()) return new ArrayList<FileManagerItem>();
         return getSubFileManagerItems(parent.listFiles(), isUsePathForName);
     }
 
@@ -41,6 +43,8 @@ public class BasicFileManagerItesLoadStrategy extends FileManagerItesLoadStrateg
             }
             fileItems.add(fileManagerItem);
         }
+        Collections.sort(fileItems, new FileManagerItemBaseComparator());
         return fileItems;
     }
+
 }

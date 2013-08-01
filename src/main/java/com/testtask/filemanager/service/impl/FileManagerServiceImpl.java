@@ -30,10 +30,7 @@ public class FileManagerServiceImpl implements FileManagerService {
     @Override
     public List<FileManagerItem> getSubFileManagerItems(String path) throws IOException {
         fileManagerState.addOpenedItemPath(path);
-        File file = new File(path);
-        if (!file.exists()) return new ArrayList<FileManagerItem>();
-
-        FileManagerItesLoadStrategy loadStrategy = FileManagerItesLoadStrategy.getFileManagerItesLoadStrategy(FileUtils.getFileExtension(file));
+        FileManagerItesLoadStrategy loadStrategy = FileManagerItesLoadStrategy.getFileManagerItemsLoadStrategy(path);
         return loadStrategy.getSubFileManagerItems(path);
     }
 

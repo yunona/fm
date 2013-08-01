@@ -5,7 +5,7 @@
         function addDirectory(item, parent) {
             var isOpened = item.subItems.length > 0;
             var cls = isOpened ? 'close' : 'open';
-            var imgCls = item.extension.length != 0 ? item.extension : "folder";
+            var imgCls = item.directory ? "folder" : item.extension;
             var div = $('<div class="' + cls + '" rel="' + item.name + '" style="margin-left:25px"></span>' + item.name + '</div>').appendTo(parent);
             $(div).wrapInner('<span class="file-text"></span>').prepend('<span class="file-icon"></span>').addClass(imgCls).addClass('file-icon');
             $(div).prepend('<span class="toggle ' + cls + '"></span>');
@@ -21,25 +21,37 @@
         }
 
         $(function() {
-            $.post(settings.url + "/initialElements.ajax", {root : settings.rootDirectory })
-                    .done(function(data) {
+            $.ajax({
+                url: settings.url + "/initialElements.ajax",
+                type: "post",
+                data: {root : settings.rootDirectory },
 
-                var f = function (parent, items) {
+                success: function(data) {
+                    var f = function (parent, items) {
 
-                    $.each(items, function(i, item) {
-                        if (item.expandable) {
-                            var div = addDirectory(item, parent);
+                        $.each(items, function(i, item) {
+                            if (item.expandable) {
+                                var div = addDirectory(item, parent);
 
-                            var isOpened = item.subItems.length > 0;
-                            if (isOpened) {
-                                f(div, item.subItems);
+                                var isOpened = item.subItems.length > 0;
+                                if (isOpened) {
+                                    f(div, item.subItems);
+                                }
+                            } else {
+                                addFile(item, parent);
                             }
-                        } else {
-                            addFile(item, parent);
-                        }
-                    });
+                        });
+                    }
+                    f(outerDiv, data);
+                },
+                beforeSend: function() {
+                    var loading = $('<div id="loading" style="display:none"><p><img src="/img/ajax-loader.gif"/> Please Wait</p></div>');
+                    $("body").append(loading);
+                    loading.fadeIn("slow");
+                },
+                complete: function() {
+                    $("#loading").detach();
                 }
-                f(outerDiv, data);
             });
         });
 
@@ -68,15 +80,28 @@
 
                 if (spanElement.hasClass('open')) {
 
-                    $.post(settings.url + "/subElements.ajax", {parent : path })
-                            .done(function(data) {
-                        $.each(data, function(i, item) {
-                            if (item.expandable) {
-                                addDirectory(item, divElement);
-                            } else {
-                                addFile(item, divElement);
-                            }
-                        });
+
+                    $.ajax({
+                        url: settings.url + "/subElements.ajax",
+                        type: "post",
+                        data: {parent : path },
+                        success: function(data) {
+                            $.each(data, function(i, item) {
+                                if (item.expandable) {
+                                    addDirectory(item, divElement);
+                                } else {
+                                    addFile(item, divElement);
+                                }
+                            });
+                        },
+                        beforeSend: function() {
+                            var loading = $('<div id="loading" style="margin-left:25px; display:none"><p><img src="/img/ajax-loader.gif"/> Please Wait</p></div>');
+                            divElement.append(loading);
+                            loading.fadeIn("slow");
+                        },
+                        complete: function() {
+                            $("#loading").detach();
+                        }
                     });
 
                     divElement.removeClass('open').addClass('close');
